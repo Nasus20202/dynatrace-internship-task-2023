@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using CurrencyApi.RatesApi;
 using CurrencyApi.RatesApi.Exceptions;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace CurrencyApi.Controllers;
 
@@ -9,12 +8,11 @@ namespace CurrencyApi.Controllers;
 [Route("exchange")]
 public class CurrencyController : Controller
 {
-    private IRatesApi _ratesApi; 
-    private IMemoryCache _cache;
-    
+    private IRatesApi _ratesApi;
+
     private const int MaxQuotations = 255;
     
-    public CurrencyController(IMemoryCache cache, IRatesApi ratesApi) => (_cache, _ratesApi) = (cache, ratesApi);
+    public CurrencyController(IRatesApi ratesApi) => (_ratesApi) = (ratesApi);
 
     [HttpGet]
     [Route("average/{currencyCode}/{dateTime:datetime=yyyy-MM-dd}")]
@@ -41,7 +39,7 @@ public class CurrencyController : Controller
     }
     
     [HttpGet]
-    [Route("extremes/{currencyCode}/{quotations:int}")]
+    [Route("extremes/{currencyCode}/{quotations:int?}")]
     public async Task<IActionResult> GetMaxAverageExchangeRate(string currencyCode, int quotations = MaxQuotations)
     {
         currencyCode = currencyCode.ToUpper();
@@ -53,11 +51,12 @@ public class CurrencyController : Controller
         try {
             (minExchangeRate, maxExchangeRate) = await _ratesApi.GetMinAndMaxAverageExchangeRate(currencyCode, quotations);
         }
-        catch (DataNotFoundException) {
+        catch (DataNotFoundException)
+        {
             return NotFound($"Data not found for {currencyCode} in {quotations} quotations");
         }
         catch (FetchFailedException) {
-            return StatusCode(500, "Failed to fetch data from NBP API");
+            return StatusCode(500);
         }
 
         var result = new { currencyCode, quotations, minExchangeRate, maxExchangeRate };
@@ -65,7 +64,7 @@ public class CurrencyController : Controller
     }
     
     [HttpGet]
-    [Route("maxBuyAskDifference/{currencyCode}/{quotations:int}")]
+    [Route("maxBuyAskDifference/{currencyCode}/{quotations:int?}")]
     public async Task<IActionResult> GetMaxDifferenceBetweenBuyAndAsk(string currencyCode, int quotations = MaxQuotations)
     {
         currencyCode = currencyCode.ToUpper();
@@ -87,5 +86,5 @@ public class CurrencyController : Controller
         var result = new { currencyCode, quotations, maxDifference };
         return Ok(result);
     }
-    
+
 }
