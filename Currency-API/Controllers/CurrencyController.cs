@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
+using CurrencyApi.RatesApi;
 
 namespace CurrencyApi.Controllers;
 
@@ -6,10 +8,16 @@ namespace CurrencyApi.Controllers;
 [Route("exchange")]
 public class CurrencyController : Controller
 {
+    private readonly IMemoryCache _cache;
+    private IRatesApi _ratesApi; 
+    
+    public CurrencyController(IMemoryCache cache, IRatesApi ratesApi) => (_cache, _ratesApi) = (cache, ratesApi);
+
     [HttpGet]
-    [Route("hello")]
-    public IActionResult Index()
+    [Route("average/{currencyCode}/{date:datetime=yyyy-MM-dd}")]
+    public async Task<IActionResult> Index(string currencyCode, DateTime date)
     {
-        return Ok("Hello World");
+        var response = await _ratesApi.GetAverageExchangeRate(currencyCode, date);
+        return Ok(response);
     }
 }
