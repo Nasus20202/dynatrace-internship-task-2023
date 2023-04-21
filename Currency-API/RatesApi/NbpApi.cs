@@ -80,9 +80,14 @@ public class NbpApi : IRatesApi
     private static async Task<NbpApiDto<T>> FetchData<T>(string url) where T : INbpApiRate
     {
         HttpResponseMessage? response;
-        using (var client = new HttpClient())
+        try
         {
+            using var client = new HttpClient();
+            client.Timeout = TimeSpan.FromSeconds(10);
             response = await client.GetAsync(url);
+        } catch(TaskCanceledException)
+        {
+            throw new FetchFailedException("NBP API request timed out");
         }
 
         var responseContent = await response.Content.ReadAsStringAsync();

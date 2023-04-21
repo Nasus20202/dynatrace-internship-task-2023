@@ -1,4 +1,5 @@
-﻿using CurrencyApi.RatesApi;
+﻿using System;
+using CurrencyApi.RatesApi;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Currency_API.Tests.NbpApiTests;
