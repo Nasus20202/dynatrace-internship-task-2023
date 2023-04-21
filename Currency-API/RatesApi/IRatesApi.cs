@@ -1,9 +1,15 @@
 ﻿namespace CurrencyApi.RatesApi;
 
+public class DateAndValue
+{
+    public DateOnly Date { get; set; }
+    public double Value { get; set; }
+
+}
+
 public interface IRatesApi
 {
-    public Task<double> GetAverageExchangeRate(string currencyCode, DateTime date);
-    public Task<double> GetMaxAverageExchangeRate(string currencyCode, int quotations);
-    public Task<double> GetMinAverageExchangeRate(string currencyCode, int quotations);
-    public Task<double> GetMaxDifferenceBetweenBuyAndSell(string currencyCode, int quotations);
+    public Task<double> GetAverageExchangeRate(string currencyCode, DateOnly date);
+    public Task<(DateAndValue min, DateAndValue max)> GetMinAndMaxAverageExchangeRate(string currencyCode, int quotations);
+    public Task<DateAndValue> GetMaxDifferenceBetweenBuyAndAsk(string currencyCode, int quotations);
 }
