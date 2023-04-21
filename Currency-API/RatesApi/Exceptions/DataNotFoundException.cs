@@ -1,4 +1,4 @@
-﻿namespace CurrencyApi.RatesApi;
+﻿namespace CurrencyApi.RatesApi.Exceptions;
 
 public class DataNotFoundException : Exception
 {

@@ -37,5 +37,5 @@ public class NbpApiRateTableC : NbpRate
     public double Ask { get; set; }
 
     public override double GetRate() => (Bid + Ask) / 2;
-    public double GetDifference() => Ask - Bid;
+    public double GetDifference() => Math.Round(Ask - Bid, 6); // round to remove floating point errors
 }

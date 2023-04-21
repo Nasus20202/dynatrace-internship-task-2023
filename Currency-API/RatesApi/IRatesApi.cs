@@ -4,6 +4,7 @@ public class DateAndValue
 {
     public DateOnly Date { get; set; }
     public double Value { get; set; }
+    public DateAndValue(double value = 0) => Value = value;
 
 }
 

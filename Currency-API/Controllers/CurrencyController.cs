@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using CurrencyApi.RatesApi;
+using CurrencyApi.RatesApi.Exceptions;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace CurrencyApi.Controllers;
@@ -32,27 +33,58 @@ public class CurrencyController : Controller
         var result = new { currencyCode, date, exchangeRate };
         return Ok(result);
     }
+    [HttpGet]
+    [Route("average/{currencyCode}")]
+    public async Task<IActionResult> GetAverageExchangeRate(string currencyCode)
+    {
+        return await GetAverageExchangeRate(currencyCode, DateTime.Today);
+    }
     
     [HttpGet]
     [Route("extremes/{currencyCode}/{quotations:int}")]
-    public async Task<IActionResult> GetMaxAverageExchangeRate(string currencyCode, int quotations)
+    public async Task<IActionResult> GetMaxAverageExchangeRate(string currencyCode, int quotations = MaxQuotations)
     {
+        currencyCode = currencyCode.ToUpper();
         if(quotations <= 0)
             return BadRequest("Quotations must be greater than 0");
         if (quotations > MaxQuotations)
-            return BadRequest($"Quotations must be less than {MaxQuotations}");
+            return BadRequest($"Quotations must be less or equal {MaxQuotations}");
         DateAndValue minExchangeRate, maxExchangeRate;
         try {
             (minExchangeRate, maxExchangeRate) = await _ratesApi.GetMinAndMaxAverageExchangeRate(currencyCode, quotations);
         }
         catch (DataNotFoundException) {
-            return NotFound($"Data not found for {currencyCode} on {quotations} quotations");
+            return NotFound($"Data not found for {currencyCode} in {quotations} quotations");
         }
         catch (FetchFailedException) {
             return StatusCode(500, "Failed to fetch data from NBP API");
         }
 
         var result = new { currencyCode, quotations, minExchangeRate, maxExchangeRate };
+        return Ok(result);
+    }
+    
+    [HttpGet]
+    [Route("maxBuyAskDifference/{currencyCode}/{quotations:int}")]
+    public async Task<IActionResult> GetMaxDifferenceBetweenBuyAndAsk(string currencyCode, int quotations = MaxQuotations)
+    {
+        currencyCode = currencyCode.ToUpper();
+        if(quotations <= 0)
+            return BadRequest("Quotations must be greater than 0");
+        if (quotations > MaxQuotations)
+            return BadRequest($"Quotations must be less or equal {MaxQuotations}");
+        DateAndValue maxDifference;
+        try {
+            maxDifference = await _ratesApi.GetMaxDifferenceBetweenBuyAndAsk(currencyCode, quotations);
+        }
+        catch (DataNotFoundException) {
+            return NotFound($"Data not found for {currencyCode} in {quotations} quotations");
+        }
+        catch (FetchFailedException) {
+            return StatusCode(500, "Failed to fetch data from NBP API");
+        }
+
+        var result = new { currencyCode, quotations, maxDifference };
         return Ok(result);
     }
     

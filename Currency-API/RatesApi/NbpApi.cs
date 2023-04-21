@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using CurrencyApi.RatesApi.Exceptions;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 
@@ -19,8 +20,7 @@ public class NbpApi : IRatesApi
     {
         string url = $"{NbpApiUrl}/exchangerates/rates/a/{currencyCode}/last/{quotations}/";
         var json = await FetchJson<NbpApiRateTableA>(url);
-        DateAndValue max = new(), min = new();
-        max.Value = 0; min.Value = Double.MaxValue;
+        DateAndValue max = new(), min = new(double.MaxValue);
         foreach (var rate in json.Rates)
         {
             if (max.Value < rate.Mid)
@@ -39,7 +39,19 @@ public class NbpApi : IRatesApi
 
     public async Task<DateAndValue> GetMaxDifferenceBetweenBuyAndAsk(string currencyCode, int quotations)
     {
-        throw new NotImplementedException();
+        string url = $"{NbpApiUrl}/exchangerates/rates/c/{currencyCode}/last/{quotations}/";
+        var json = await FetchJson<NbpApiRateTableC>(url);
+        DateAndValue max = new();
+        foreach (var rate in json.Rates)
+        {
+            var difference = rate.GetDifference();
+            if (max.Value < difference)
+            {
+                max.Date = rate.EffectiveDate;
+                max.Value = difference;
+            }
+        }
+        return max;
     }
 
     
