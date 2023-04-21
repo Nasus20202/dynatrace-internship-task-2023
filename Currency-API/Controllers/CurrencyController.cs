@@ -8,11 +8,10 @@ namespace CurrencyApi.Controllers;
 [Route("exchange")]
 public class CurrencyController : Controller
 {
-    private IRatesApi _ratesApi;
-
+    private readonly IRatesApi _ratesApi;
     private const int MaxQuotations = 255;
     
-    public CurrencyController(IRatesApi ratesApi) => (_ratesApi) = (ratesApi);
+    public CurrencyController(IRatesApi ratesApi) => _ratesApi = ratesApi;
 
     [HttpGet]
     [Route("average/{currencyCode}/{dateTime:datetime=yyyy-MM-dd}")]
