@@ -11,26 +11,27 @@ public class NbpApi : IRatesApi
     public async Task<double> GetAverageExchangeRate(string currencyCode, DateOnly date)
     {
         string url = $"{NbpApiUrl}/exchangerates/rates/a/{currencyCode}/{date:yyyy-MM-dd}/";
-        var json = await FetchJson(url);
-        return json.rates[0].mid;
+        var json = await FetchJson<NbpApiRateTableA>(url);
+        return json.Rates[0].GetRate();
     }
 
     public async Task<(DateAndValue min, DateAndValue max)> GetMinAndMaxAverageExchangeRate(string currencyCode, int quotations)
     {
         string url = $"{NbpApiUrl}/exchangerates/rates/a/{currencyCode}/last/{quotations}/";
-        var json = await FetchJson(url);
+        var json = await FetchJson<NbpApiRateTableA>(url);
         DateAndValue max = new(), min = new();
         max.Value = 0; min.Value = Double.MaxValue;
-        foreach (var rate in json["rates"])
+        foreach (var rate in json.Rates)
         {
-            double mid = Double.Parse(rate.mid.ToString());
-            if (max.Value < mid) {
-                max.Date = DateOnly.Parse(rate.effectiveDate.ToString());
-                max.Value = mid;
+            if (max.Value < rate.Mid)
+            {
+                max.Date = rate.EffectiveDate;
+                max.Value = rate.Mid;
             }
-            if(min.Value > mid) {
-                min.Date = DateOnly.Parse(rate.effectiveDate.ToString());
-                min.Value = mid;
+            if(min.Value > rate.Mid)
+            {
+                min.Date = rate.EffectiveDate;
+                min.Value = rate.Mid;
             }
         }
         return (min, max);
@@ -41,7 +42,8 @@ public class NbpApi : IRatesApi
         throw new NotImplementedException();
     }
 
-    private async Task<dynamic> FetchJson(string url)
+    
+    private async Task<NbpApiDto<T>> FetchJson<T>(string url) where T : INbpApiRate
     {
         HttpResponseMessage? response;
         using (var client = new HttpClient())
@@ -56,7 +58,7 @@ public class NbpApi : IRatesApi
         if (response.StatusCode != HttpStatusCode.OK || responseContent == null)
             throw new FetchFailedException("Failed to fetch data from NBP API");
 
-        dynamic? json = JsonConvert.DeserializeObject(responseContent);
+        NbpApiDto<T>? json = JsonConvert.DeserializeObject<NbpApiDto<T>>(responseContent);
         if (json == null)
             throw new FetchFailedException("Invalid JSON response from NBP API");
         return json;
