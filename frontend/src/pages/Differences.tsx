@@ -1,6 +1,10 @@
+import {Title} from "../components/Title";
+
 function Differences() {
     return (
-        <div>Differences</div>
+        <div>
+            <Title value="Differences"/>
+        </div>
     )
 }
 

@@ -1,6 +1,10 @@
+import {Title} from "../components/Title";
+
 function NotFound() {
     return (
-        <div>Not Found</div>
+        <div>
+            <Title value="Not Found"/>
+        </div>
     )
 }
 

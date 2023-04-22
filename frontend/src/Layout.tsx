@@ -15,31 +15,23 @@ function Layout() {
                     <Navbar.Toggle aria-controls="navbar"/>
                     <Navbar.Collapse id="navbar">
                         <Nav>
-                        <Nav.Link>
-                            <Link to="/">
+                            <Link className="nav-link" to="/">
                                 Average
                             </Link>
-                        </Nav.Link>
-                        <Nav.Link>
-                            <Link to="/extremes">
+                            <Link className="nav-link" to="/extremes">
                                 Extremes
                             </Link>
-                        </Nav.Link>
-                        <Nav.Link>
-                            <Link to="/differences">
+                            <Link className="nav-link" to="/differences">
                                 Differences
                             </Link>
-                        </Nav.Link>
-                        <Nav.Link>
-                            <Link to="/codes">
+                            <Link className="nav-link" to="/codes">
                                 Codes
                             </Link>
-                        </Nav.Link>
                         </Nav>
                     </Navbar.Collapse>
                 </Container>
             </Navbar>
-            <Container>
+            <Container className="mt-2">
                 <Outlet/>
             </Container>
         </main>

@@ -1,6 +1,10 @@
+import {Title} from "../components/Title";
+
 function Codes() {
     return (
-        <div>Codes</div>
+        <div>
+            <Title value="Codes"/>
+        </div>
     )
 }
 

@@ -1,6 +1,10 @@
+import {Title} from "../components/Title";
+
 function Extremes() {
     return (
-        <div>Extremes</div>
+        <div>
+            <Title value="Extremes"/>
+        </div>
     )
 }
 
