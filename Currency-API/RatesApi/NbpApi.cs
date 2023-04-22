@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Http.Headers;
 using CurrencyApi.RatesApi.Exceptions;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
@@ -8,10 +9,12 @@ namespace CurrencyApi.RatesApi;
 public class NbpApi : IRatesApi
 {
     private const string NbpApiUrl = "http://api.nbp.pl/api";
-    private const int CacheTTLMins = 15;
+    private const int CacheTimeToLiveSecs = 15*60;
+    private const int TimeoutSecs = 10;
     private readonly IMemoryCache _cache;
+    private readonly IHttpClientFactory _clientFactory;
 
-    public NbpApi(IMemoryCache cache) => _cache = cache;
+    public NbpApi(IMemoryCache cache, IHttpClientFactory clientFactory) => (_cache, _clientFactory) = (cache, clientFactory);
 
     // Returns average exchange rate for given currency code and date
     public async Task<double> GetAverageExchangeRate(string currencyCode, DateOnly date)
@@ -72,19 +75,21 @@ public class NbpApi : IRatesApi
         if (!_cache.TryGetValue(key, out NbpApiDto<T>? json))
         {
             json = await fetch();
-            _cache.Set(key, json, TimeSpan.FromMinutes(CacheTTLMins));
+            _cache.Set(key, json, TimeSpan.FromSeconds(CacheTimeToLiveSecs));
         }
         return json;
     }
     
-    private static async Task<NbpApiDto<T>> FetchData<T>(string url) where T : INbpApiRate
+    private async Task<NbpApiDto<T>> FetchData<T>(string url) where T : INbpApiRate
     {
         HttpResponseMessage? response;
         try
         {
-            using var client = new HttpClient();
-            client.Timeout = TimeSpan.FromSeconds(10);
-            response = await client.GetAsync(url);
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            var client = _clientFactory.CreateClient();
+            client.Timeout = TimeSpan.FromSeconds(TimeoutSecs);
+            response = await client.SendAsync(request);
         } catch(TaskCanceledException)
         {
             throw new FetchFailedException("NBP API request timed out");

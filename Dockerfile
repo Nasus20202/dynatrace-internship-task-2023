@@ -12,7 +12,7 @@ WORKDIR "/src/Currency-API"
 RUN dotnet build "Currency-API.csproj" -c Debug -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Currency-API.csproj" -c Debug -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "Currency-API.csproj" -c Debug -o /app/publish
 
 FROM base AS final
 WORKDIR /app

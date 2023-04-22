@@ -11,16 +11,14 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddMemoryCache();
 
-builder.Services.AddTransient<IRatesApi, NbpApi>(); // Dependency injection for currency rates api
+builder.Services.AddSingleton<IRatesApi, NbpApi>(); // Dependency injection for currency rates api
+builder.Services.AddHttpClient(); // Dependency injection for http client
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 

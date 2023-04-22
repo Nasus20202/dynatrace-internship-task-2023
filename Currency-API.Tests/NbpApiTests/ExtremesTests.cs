@@ -5,7 +5,7 @@ namespace Currency_API.Tests.NbpApiTests;
 
 public class ExtremesTests
 {
-    private readonly NbpApi _nbpApi = new(new MemoryCache(new MemoryCacheOptions()));
+    private readonly NbpApi _nbpApi = new(new MemoryCache(new MemoryCacheOptions()), new TestHttpFactory());
     [Fact]
     public void Test1()
     {

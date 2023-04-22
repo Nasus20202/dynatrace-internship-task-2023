@@ -1,4 +1,3 @@
-using System;
 using CurrencyApi.RatesApi;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -6,7 +5,7 @@ namespace Currency_API.Tests.NbpApiTests;
 
 public class AverageTests
 {
-    private readonly NbpApi _nbpApi = new(new MemoryCache(new MemoryCacheOptions()));
+    private readonly NbpApi _nbpApi = new(new MemoryCache(new MemoryCacheOptions()), new TestHttpFactory());
     [Fact]
     public void Test1()
     {
