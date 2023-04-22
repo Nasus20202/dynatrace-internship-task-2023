@@ -1,5 +1,6 @@
+import config from './api.config.json'
 
-const apiPath = "http://localhost:5000"
+const apiPath = `${config.url}:${config.port}`
 
 interface IAverageExchangeRate {
     rate: number,
@@ -8,12 +9,13 @@ interface IAverageExchangeRate {
 }
 
 async function GetAverageExchangeRate(code: string, date: Date) : Promise<IAverageExchangeRate>{
-    let path = `${apiPath}/exchange/average/${code}/${date.getFullYear()}-${date.getMonth()}-${date.getDay()}`;
+    const path = `${apiPath}/exchange/average/${code}/${date.getFullYear()}-${date.getMonth()}-${date.getDay()}`;
     const response = await fetch(path);
     if(response.status !== 200) {
         return {rate: 0, statusCode: response.status, message: await response.text()};
     }
     const data = await response.json();
+
     return {rate: data.exchangeRate, statusCode: response.status, message:""};
 }
 
@@ -27,7 +29,7 @@ interface IExtremeExchangeRates {
 }
 
 async function GetExtremeExchangeRates(code: string, quotations: number) : Promise<IExtremeExchangeRates>{
-    let path = `${apiPath}/exchange/extremes/${code}/${quotations}`;
+    const path = `${apiPath}/exchange/extremes/${code}/${quotations}`;
     const response = await fetch(path);
     if(response.status !== 200) {
         return {minRate: 0, minDate: new Date(), maxRate: 0, maxDate: new Date(),
@@ -47,7 +49,7 @@ interface IMaxDifference {
 }
 
 async function GetMaxDifference(code: string, quotations: number) : Promise<IMaxDifference> {
-    let path = `${apiPath}/exchange/maxBuyAskDifference/${code}/${quotations}`;
+    const path = `${apiPath}/exchange/maxBuyAskDifference/${code}/${quotations}`;
     const response = await fetch(path);
     if(response.status !== 200) {
         return {difference: 0, date: new Date(),
