@@ -1,4 +1,4 @@
-﻿namespace CurrencyApi.RatesApi.Exceptions;
+﻿namespace CurrencyApi.Currency.CurrencyService.Exceptions;
 
 public class FetchFailedException : Exception
 {

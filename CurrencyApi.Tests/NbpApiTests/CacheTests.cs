@@ -10,7 +10,7 @@ public class CacheTests
     public void Test1()
     {
         MemoryCache memoryCache = new(new MemoryCacheOptions());
-        var nbpApi = new NbpApi(memoryCache, new TestHttpFactory());
+        var nbpApi = new NbpService(memoryCache, new TestHttpFactory());
         DateOnly date1 = new(2019, 10, 1), date2 = date1.AddDays(1), date3 = date2.AddDays(1); string currency = "eur";
         nbpApi.GetAverageExchangeRate(currency, date1).Wait();
         Assert.Equal(1, memoryCache.Count);

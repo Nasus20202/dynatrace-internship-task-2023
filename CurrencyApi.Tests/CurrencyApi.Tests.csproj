@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Currency-API\Currency-API.csproj" />
+    <ProjectReference Include="..\CurrencyApi\CurrencyApi.csproj" />
   </ItemGroup>
 
 </Project>

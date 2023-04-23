@@ -1,4 +1,4 @@
-﻿namespace CurrencyApi.RatesApi;
+﻿namespace CurrencyApi.Currency.CurrencyService;
 
 public class DateAndValue
 {
@@ -7,7 +7,7 @@ public class DateAndValue
     public DateAndValue(double value = 0) => Value = value;
 }
 
-public interface IRatesApi
+public interface IRatesService
 {
     public Task<double> GetAverageExchangeRate(string currencyCode, DateOnly date);
     public Task<(DateAndValue min, DateAndValue max)> GetMinAndMaxAverageExchangeRate(string currencyCode, int quotations);

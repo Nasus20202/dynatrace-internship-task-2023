@@ -1,8 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Currency-API", "Currency-API/Currency-API.csproj", "{C3C49BE3-CDFB-4BD7-BF8E-5B85385F21B9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurrencyApi", "CurrencyApi\CurrencyApi.csproj", "{C3C49BE3-CDFB-4BD7-BF8E-5B85385F21B9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Currency-API.Tests", "Currency-API.Tests\Currency-API.Tests.csproj", "{4F61E935-FFF2-466C-9FC2-FD3919C21020}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurrencyApi.Tests", "CurrencyApi.Tests\CurrencyApi.Tests.csproj", "{4F61E935-FFF2-466C-9FC2-FD3919C21020}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

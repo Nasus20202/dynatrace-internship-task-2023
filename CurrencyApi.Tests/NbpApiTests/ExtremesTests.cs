@@ -5,11 +5,11 @@ namespace Currency_API.Tests.NbpApiTests;
 
 public class ExtremesTests
 {
-    private readonly NbpApi _nbpApi = new(new MemoryCache(new MemoryCacheOptions()), new TestHttpFactory());
+    private readonly NbpService _nbpService = new(new MemoryCache(new MemoryCacheOptions()), new TestHttpFactory());
     [Fact]
     public void Test1()
     {
-        var result = _nbpApi.GetMinAndMaxAverageExchangeRate("krw", 50).Result;
+        var result = _nbpService.GetMinAndMaxAverageExchangeRate("krw", 50).Result;
         var min = result.min.Value;
         var max = result.max.Value;
         Assert.InRange(min, 0.0001, 0.03);
@@ -20,7 +20,7 @@ public class ExtremesTests
     [Fact]
     public void Test2()
     {
-        var result = _nbpApi.GetMinAndMaxAverageExchangeRate("CZK", 250).Result;
+        var result = _nbpService.GetMinAndMaxAverageExchangeRate("CZK", 250).Result;
         var min = result.min.Value;
         var max = result.max.Value;
         Assert.InRange(min, 0.005, 0.5);

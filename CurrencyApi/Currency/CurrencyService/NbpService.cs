@@ -1,25 +1,25 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
-using CurrencyApi.RatesApi.Exceptions;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
+using CurrencyApi.Currency.CurrencyService.Exceptions;
 
-namespace CurrencyApi.RatesApi;
+namespace CurrencyApi.Currency.CurrencyService;
 
-public class NbpApi : IRatesApi
+public class NbpService : IRatesService
 {
-    private const string NbpApiUrl = "http://api.nbp.pl/api";
+    private const string NbpApiUrl = "https://api.nbp.pl/api";
     private const int CacheTimeToLiveSecs = 15*60;
     private const int TimeoutSecs = 10;
     private readonly IMemoryCache _cache;
     private readonly IHttpClientFactory _clientFactory;
 
-    public NbpApi(IMemoryCache cache, IHttpClientFactory clientFactory) => (_cache, _clientFactory) = (cache, clientFactory);
+    public NbpService(IMemoryCache cache, IHttpClientFactory clientFactory) => (_cache, _clientFactory) = (cache, clientFactory);
 
     // Returns average exchange rate for given currency code and date
     public async Task<double> GetAverageExchangeRate(string currencyCode, DateOnly date)
     {
-        string url = $"{NbpApiUrl}/exchangerates/rates/a/{currencyCode}/{date:yyyy-MM-dd}/";
+        var url = $"{NbpApiUrl}/exchangerates/rates/a/{currencyCode}/{date:yyyy-MM-dd}/";
         var json = await GetData<NbpApiRateTableA>(url);
         return json.Rates[0].GetRate();
     }
@@ -27,7 +27,7 @@ public class NbpApi : IRatesApi
     // Returns max average exchange rate for given currency code and number of quotations
     public async Task<(DateAndValue min, DateAndValue max)> GetMinAndMaxAverageExchangeRate(string currencyCode, int quotations)
     {
-        string url = $"{NbpApiUrl}/exchangerates/rates/a/{currencyCode}/last/{quotations}/";
+        var url = $"{NbpApiUrl}/exchangerates/rates/a/{currencyCode}/last/{quotations}/";
         var json = await GetData<NbpApiRateTableA>(url);
         DateAndValue max = new(), min = new(double.MaxValue);
         foreach (var rate in json.Rates)
@@ -77,7 +77,7 @@ public class NbpApi : IRatesApi
             json = await fetch();
             _cache.Set(key, json, TimeSpan.FromSeconds(CacheTimeToLiveSecs));
         }
-        return json;
+        return json!;
     }
     
     private async Task<NbpApiDto<T>> FetchData<T>(string url) where T : INbpApiRate

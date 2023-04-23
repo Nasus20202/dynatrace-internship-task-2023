@@ -1,4 +1,4 @@
-﻿namespace CurrencyApi.RatesApi;
+﻿namespace CurrencyApi.Currency.CurrencyService;
 
 public class NbpApiDto<T> where T : INbpApiRate {
     public NbpApiDto(string table, string currency, string code, T[] rates)

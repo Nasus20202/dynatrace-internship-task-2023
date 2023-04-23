@@ -1,16 +1,14 @@
-using CurrencyApi.RatesApi;
+using CurrencyApi.Currency.CurrencyService;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // CORS
-var allowAllPolicy = "_allowAllPolicy";
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: allowAllPolicy,
-        policy =>
-        {
-            policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
-        });
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+    });
 });
 
 // Add services to the container.
@@ -22,8 +20,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddMemoryCache();
 
-builder.Services.AddSingleton<IRatesApi, NbpApi>(); // Dependency injection for currency rates api
-builder.Services.AddHttpClient(); // Dependency injection for http client
+builder.Services.AddTransient<IRatesService, NbpService>(); // Dependency injection for currency rates api
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
@@ -31,7 +29,7 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseCors(allowAllPolicy);
+app.UseCors();
 app.UseHttpsRedirection();
 
 app.MapControllers();

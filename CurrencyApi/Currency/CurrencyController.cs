@@ -1,17 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using CurrencyApi.RatesApi;
-using CurrencyApi.RatesApi.Exceptions;
+using CurrencyApi.Currency.CurrencyService;
+using CurrencyApi.Currency.CurrencyService.Exceptions;
 
-namespace CurrencyApi.Controllers;
+namespace CurrencyApi.Currency;
 
 [ApiController]
 [Route("exchange")]
 public class CurrencyController : Controller
 {
-    private readonly IRatesApi _ratesApi;
+    private readonly IRatesService _ratesService;
     private const int MaxQuotations = 255;
     
-    public CurrencyController(IRatesApi ratesApi) => _ratesApi = ratesApi;
+    public CurrencyController(IRatesService ratesService) => _ratesService = ratesService;
 
     [HttpGet]
     [Route("average/{currencyCode}/{dateTime:datetime=yyyy-MM-dd}")]
@@ -21,7 +21,7 @@ public class CurrencyController : Controller
         currencyCode = currencyCode.ToUpper();
         double exchangeRate;
         try {
-            exchangeRate = await _ratesApi.GetAverageExchangeRate(currencyCode, date);
+            exchangeRate = await _ratesService.GetAverageExchangeRate(currencyCode, date);
         } catch (DataNotFoundException) {
             return NotFound($"Data not found for {currencyCode} on {date}");
         } catch (FetchFailedException) {
@@ -30,6 +30,7 @@ public class CurrencyController : Controller
         var result = new { currencyCode, date, exchangeRate };
         return Ok(result);
     }
+    
     [HttpGet]
     [Route("average/{currencyCode}")]
     public async Task<IActionResult> GetAverageExchangeRate(string currencyCode)
@@ -48,7 +49,7 @@ public class CurrencyController : Controller
             return BadRequest($"Quotations must be less or equal {MaxQuotations}");
         DateAndValue minExchangeRate, maxExchangeRate;
         try {
-            (minExchangeRate, maxExchangeRate) = await _ratesApi.GetMinAndMaxAverageExchangeRate(currencyCode, quotations);
+            (minExchangeRate, maxExchangeRate) = await _ratesService.GetMinAndMaxAverageExchangeRate(currencyCode, quotations);
         }
         catch (DataNotFoundException)
         {
@@ -73,7 +74,7 @@ public class CurrencyController : Controller
             return BadRequest($"Quotations must be less or equal {MaxQuotations}");
         DateAndValue maxDifference;
         try {
-            maxDifference = await _ratesApi.GetMaxDifferenceBetweenBuyAndAsk(currencyCode, quotations);
+            maxDifference = await _ratesService.GetMaxDifferenceBetweenBuyAndAsk(currencyCode, quotations);
         }
         catch (DataNotFoundException) {
             return NotFound($"Data not found for {currencyCode} in {quotations} quotations");
