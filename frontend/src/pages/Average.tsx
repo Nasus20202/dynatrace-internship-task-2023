@@ -1,5 +1,5 @@
 import {Title} from "../components/Title";
-import {GetAverageExchangeRate} from "../api/Api";
+import GetAverageExchangeRate from "../api/AverageExchangeRate";
 import React from "react";
 import {Form, Button, Row, Col, Alert} from "react-bootstrap";
 
@@ -8,7 +8,9 @@ interface IProps {
 
 interface IState {
     currencyCode: string;
+    currencyCodeInput: string;
     date: string;
+    dateInput: string;
     result: number;
     waiting: boolean;
     message: string;
@@ -19,10 +21,12 @@ class Average extends React.Component<IProps, IState> {
         super(props);
         this.state = {
             currencyCode: "",
+            currencyCodeInput: "",
             date: "",
-            result: 0,
+            dateInput: "",
+            result: -1,
             waiting: false,
-            message: ""
+            message: "",
         };
 
         this.handleCurrencyCodeChange = this.handleCurrencyCodeChange.bind(this);
@@ -31,13 +35,13 @@ class Average extends React.Component<IProps, IState> {
     }
     handleCurrencyCodeChange = (event: any) => {
         this.setState({
-            currencyCode: event.target.value
+            currencyCodeInput: event.target.value.toUpperCase(),
         });
     }
 
     handleDateChange = (event: any) => {
         this.setState({
-            date: event.target.value
+            dateInput: event.target.value
         });
     }
 
@@ -46,21 +50,30 @@ class Average extends React.Component<IProps, IState> {
         if(!this.validateForm())
             return;
         this.setState({
-            waiting: true
+            waiting: true,
+            currencyCode: this.state.currencyCodeInput,
+            date: this.state.dateInput
         });
-        let date = new Date(this.state.date);
-        GetAverageExchangeRate(this.state.currencyCode, date).then(response => {
+        const date = new Date(this.state.dateInput);
+        GetAverageExchangeRate(this.state.currencyCodeInput, date).then(response => {
             this.setState({
-                result: response.rate,
-                waiting: false
+                waiting: false,
+                result: response.rate !== undefined ? response.rate as number : -1,
+                message: response.message !== undefined ? response.message as string : ""
             });
         });
     }
 
     validateForm() : boolean{
-        if(this.state.currencyCode.length !== 3) {
+        if(this.state.currencyCodeInput.length !== 3) {
             this.setState({
                 message: "Currency code must be 3 characters long"
+            });
+            return false;
+        }
+        if(this.state.dateInput.length === 0) {
+            this.setState({
+                message: "Date must be specified"
             });
             return false;
         }
@@ -80,7 +93,7 @@ class Average extends React.Component<IProps, IState> {
                         Currency code:
                     </Form.Label>
                     <Col sm="10">
-                        <Form.Control type="text" placeholder="Enter currency code" name="currencyCode" onChange={this.handleCurrencyCodeChange}/>
+                        <Form.Control type="text" placeholder="Enter currency code" name="currencyCode" onChange={this.handleCurrencyCodeChange} disabled={this.state.waiting}/>
                     </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
@@ -88,17 +101,17 @@ class Average extends React.Component<IProps, IState> {
                         Date:
                     </Form.Label>
                     <Col sm="10">
-                        <Form.Control type="date" placeholder="Enter date" name="date" onChange={this.handleDateChange}/>
+                        <Form.Control type="date" placeholder="Enter date" name="date" onChange={this.handleDateChange} disabled={this.state.waiting}/>
                     </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
                     <Col sm={{span: 10, offset: 2}}>
-                        <Button type="submit">Submit</Button>
+                        <Button type="submit" disabled={this.state.waiting}>Submit</Button>
                     </Col>
                 </Form.Group>
             </Form>
             <Alert variant="danger" show={this.state.message.length !== 0}>{this.state.message}</Alert>
-            <Alert variant="success" show={this.state.result !== 0}>Average exchange rate for {this.state.currencyCode} on {this.state.date} is {this.state.result}</Alert>
+            <Alert variant="success" show={this.state.result !== -1}>Average exchange rate for {this.state.currencyCode} on {this.state.date} is {this.state.result} zł</Alert>
         </div>
         );
     }

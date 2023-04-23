@@ -24,9 +24,6 @@ function Layout() {
                             <Link className="nav-link" to="/differences">
                                 Differences
                             </Link>
-                            <Link className="nav-link" to="/codes">
-                                Codes
-                            </Link>
                         </Nav>
                     </Navbar.Collapse>
                 </Container>
