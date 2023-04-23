@@ -6,6 +6,7 @@ using CurrencyApi.Currency.CurrencyDto;
 namespace CurrencyApi.Currency;
 
 [ApiController]
+[TypeFilter(typeof(CurrencyErrorHandler))]
 [Route("exchange")]
 public class CurrencyController : Controller
 {
@@ -20,15 +21,8 @@ public class CurrencyController : Controller
     {
         var date = DateOnly.FromDateTime(dateTime);
         currencyCode = currencyCode.ToUpper();
-        try {
-            var rate = await _ratesService.GetAverageExchangeRate(currencyCode, date);
-            return Ok(new AverageRateDto(currencyCode, date, rate));
-        } catch (DataNotFoundException) {
-            return NotFound($"Data not found for {currencyCode} on {date}");
-        } catch (FetchFailedException) {
-            return StatusCode(500, "Failed to fetch data from NBP API");
-        }
-
+        var rate = await _ratesService.GetAverageExchangeRate(currencyCode, date);
+        return Ok(new AverageRateDto(currencyCode, date, rate));
     }
     
     [HttpGet]
@@ -47,17 +41,8 @@ public class CurrencyController : Controller
             return BadRequest("Quotations must be greater than 0");
         if (quotations > MaxQuotations)
             return BadRequest($"Quotations must be less or equal {MaxQuotations}");
-        try {
-            var data = await _ratesService.GetMinAndMaxAverageExchangeRate(currencyCode, quotations);
-            return Ok(new ExtremeRatesDto(currencyCode, quotations, data.min, data.max));
-        }
-        catch (DataNotFoundException)
-        {
-            return NotFound($"Data not found for {currencyCode} in {quotations} quotations");
-        }
-        catch (FetchFailedException) {
-            return StatusCode(500);
-        }
+        var data = await _ratesService.GetMinAndMaxAverageExchangeRate(currencyCode, quotations);
+        return Ok(new ExtremeRatesDto(currencyCode, quotations, data.min, data.max));
     }
     
     [HttpGet]
@@ -69,17 +54,8 @@ public class CurrencyController : Controller
             return BadRequest("Quotations must be greater than 0");
         if (quotations > MaxQuotations)
             return BadRequest($"Quotations must be less or equal {MaxQuotations}");
-        try {
-            var data = await _ratesService.GetMaxDifferenceBetweenBuyAndAsk(currencyCode, quotations);
-            return Ok(new RateDifferenceDto(currencyCode, quotations, data));
-        }
-        catch (DataNotFoundException) {
-            return NotFound($"Data not found for {currencyCode} in {quotations} quotations");
-        }
-        catch (FetchFailedException) {
-            return StatusCode(500, "Failed to fetch data from NBP API");
-        }
-
+        var data = await _ratesService.GetMaxDifferenceBetweenBuyAndAsk(currencyCode, quotations);
+        return Ok(new RateDifferenceDto(currencyCode, quotations, data));
     }
 
 }
