@@ -1,8 +1,6 @@
 import {Title} from "../components/Title";
-import MaxDifference from "../api/MaxDifference";
 import React from "react";
 import {Form, Button, Row, Col, Alert} from "react-bootstrap";
-import GetExtremeExchangeRates from "../api/ExtremeExchangeRates";
 import GetMaxDifference from "../api/MaxDifference";
 
 interface IProps {
