@@ -20,15 +20,15 @@ public class CachedJsonFetcher : ICachedJsonFetcher
 
     public async Task<T> GetData<T>(string url)
     {
-        return await CheckCache(url, async () => await FetchData<T>(url));
+        return await CheckCache<T>(url);
     }
 
-    private async Task<T> CheckCache<T>(string key, Func<Task<T>> fetch)
+    private async Task<T> CheckCache<T>(string url)
     {
-        if (!_cache.TryGetValue(key, out T? json))
+        if (!_cache.TryGetValue(url, out T? json))
         {
-            json = await fetch();
-            _cache.Set(key, json, TimeSpan.FromSeconds(_cacheTimeToLiveInSecs));
+            json = await FetchData<T>(url);
+            _cache.Set(url, json, TimeSpan.FromSeconds(_cacheTimeToLiveInSecs));
         }
         return json!;
     }
@@ -38,8 +38,7 @@ public class CachedJsonFetcher : ICachedJsonFetcher
         var client = _clientFactory.CreateClient();
         try
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, url);
-            var response = await client.SendAsync(request);
+            var response = await client.GetAsync(url);
             if (response.StatusCode == HttpStatusCode.NotFound)
                 throw new DataNotFoundException("Data not found");
             if (response.StatusCode != HttpStatusCode.OK)

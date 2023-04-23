@@ -9,13 +9,12 @@ public class CurrencyErrorHandler : IExceptionFilter
 {
     public void OnException(ExceptionContext context)
     {
-        var type = context.Exception.GetType();
-        if (type == typeof(DataNotFoundException))
+        if (context.Exception is DataNotFoundException)
         {
             context.Result = new NotFoundObjectResult(context.Exception.Message);
             context.ExceptionHandled = true;
         } 
-        else if (type == typeof(FetchFailedException))
+        else if (context.Exception is FetchFailedException)
         {
             context.Result = new StatusCodeResult(StatusCodes.Status500InternalServerError);
             context.ExceptionHandled = true;

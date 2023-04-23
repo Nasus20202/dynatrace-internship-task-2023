@@ -1,6 +1,6 @@
-﻿using CurrencyApi.Currency.CurrencyService.DTO;
+﻿using CurrencyApi.Currency.CurrencyService.Models;
 
-namespace CurrencyApi.Currency.CurrencyDto;
+namespace CurrencyApi.Currency.CurrencyDtos;
 
 
 public class RateDifferenceDto

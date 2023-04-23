@@ -21,7 +21,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddMemoryCache();
 
-builder.Services.AddTransient<IRatesService, NbpService>();
+builder.Services.AddTransient<IRatesService, NbpApiService>();
 builder.Services.AddTransient<ICachedJsonFetcher, CachedJsonFetcher>();
 builder.Services.AddHttpClient();
 

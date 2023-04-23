@@ -1,4 +1,4 @@
-﻿namespace CurrencyApi.Currency.CurrencyDto;
+﻿namespace CurrencyApi.Currency.CurrencyDtos;
 
 public class AverageRateDto
 {

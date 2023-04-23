@@ -1,4 +1,4 @@
-﻿namespace CurrencyApi.Currency.CurrencyService.DTO;
+﻿namespace CurrencyApi.Currency.CurrencyService.Models;
 
 public class DatedValue
 {
