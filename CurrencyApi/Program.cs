@@ -1,4 +1,5 @@
 using CurrencyApi.Currency.CurrencyService;
+using CurrencyApi.Currency.CurrencyService.JsonFetcher;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +21,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddMemoryCache();
 
-builder.Services.AddTransient<IRatesService, NbpService>(); // Dependency injection for currency rates api
+builder.Services.AddTransient<IRatesService, NbpService>();
+builder.Services.AddTransient<ICachedJsonFetcher, CachedJsonFetcher>();
 builder.Services.AddHttpClient();
 
 var app = builder.Build();

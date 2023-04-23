@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using CurrencyApi.Currency.CurrencyService;
 using CurrencyApi.Currency.CurrencyService.Exceptions;
-using CurrencyApi.Currency.Models;
+using CurrencyApi.Currency.CurrencyDto;
 
 namespace CurrencyApi.Currency;
 
@@ -22,7 +22,7 @@ public class CurrencyController : Controller
         currencyCode = currencyCode.ToUpper();
         try {
             var rate = await _ratesService.GetAverageExchangeRate(currencyCode, date);
-            return Ok(new AverageModel(currencyCode, date, rate));
+            return Ok(new AverageRateDto(currencyCode, date, rate));
         } catch (DataNotFoundException) {
             return NotFound($"Data not found for {currencyCode} on {date}");
         } catch (FetchFailedException) {
@@ -49,7 +49,7 @@ public class CurrencyController : Controller
             return BadRequest($"Quotations must be less or equal {MaxQuotations}");
         try {
             var data = await _ratesService.GetMinAndMaxAverageExchangeRate(currencyCode, quotations);
-            return Ok(new ExtremesModel(currencyCode, quotations, data.min, data.max));
+            return Ok(new ExtremeRatesDto(currencyCode, quotations, data.min, data.max));
         }
         catch (DataNotFoundException)
         {
@@ -71,7 +71,7 @@ public class CurrencyController : Controller
             return BadRequest($"Quotations must be less or equal {MaxQuotations}");
         try {
             var data = await _ratesService.GetMaxDifferenceBetweenBuyAndAsk(currencyCode, quotations);
-            return Ok(new DifferenceModel(currencyCode, quotations, data));
+            return Ok(new RateDifferenceDto(currencyCode, quotations, data));
         }
         catch (DataNotFoundException) {
             return NotFound($"Data not found for {currencyCode} in {quotations} quotations");
