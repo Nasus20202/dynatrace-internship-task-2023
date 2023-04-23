@@ -1,15 +1,10 @@
-﻿namespace CurrencyApi.Currency.CurrencyService;
+﻿using CurrencyApi.Currency.CurrencyService.DTO;
 
-public class DateAndValue
-{
-    public DateOnly Date { get; set; }
-    public double Value { get; set; }
-    public DateAndValue(double value = 0) => Value = value;
-}
+namespace CurrencyApi.Currency.CurrencyService;
 
 public interface IRatesService
 {
     public Task<double> GetAverageExchangeRate(string currencyCode, DateOnly date);
-    public Task<(DateAndValue min, DateAndValue max)> GetMinAndMaxAverageExchangeRate(string currencyCode, int quotations);
-    public Task<DateAndValue> GetMaxDifferenceBetweenBuyAndAsk(string currencyCode, int quotations);
+    public Task<(DatedValue min, DatedValue max)> GetMinAndMaxAverageExchangeRate(string currencyCode, int quotations);
+    public Task<DatedValue> GetMaxDifferenceBetweenBuyAndAsk(string currencyCode, int quotations);
 }
