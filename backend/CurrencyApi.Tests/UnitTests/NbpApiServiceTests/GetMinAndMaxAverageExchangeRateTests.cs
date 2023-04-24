@@ -11,6 +11,7 @@ public class GetMinAndMaxAverageExchangeRateTests
     [Fact]
     public async Task GetMinAndMaxAverageExchangeRate_ValidInput()
     {
+        // Arrange
         var cache = new MemoryCache(new MemoryCacheOptions());
         var httpClientFactory = new MockHttpClientFactory();
 
@@ -28,7 +29,11 @@ public class GetMinAndMaxAverageExchangeRateTests
             "{\"no\":\"079/A/NBP/2023\",\"effectiveDate\":\"2023-04-24\",\"mid\":4.1905}]}");
 
         var service = new NbpApiService(new CachedJsonFetcher(cache, httpClientFactory));
+        
+        // Act
         var result = await service.GetMinAndMaxAverageExchangeRate("usd", 10);
+        
+        // Assert
         Assert.Equal(4.1905, result.min.Value);
         Assert.Equal(new DateOnly(2023, 4, 24), result.min.Date);
         Assert.Equal(4.2917, result.max.Value);
@@ -36,19 +41,35 @@ public class GetMinAndMaxAverageExchangeRateTests
     }
     
     [Fact]
-    public async Task GetMinAndMaxAverageExchangeRate_InvalidQuotationCount()
+    public async Task GetMinAndMaxAverageExchangeRate_QuotationCountTooLow()
     {
+        // Arrange
         var cache = new MemoryCache(new MemoryCacheOptions());
         var httpClientFactory = new MockHttpClientFactory();
 
         httpClientFactory.AddResponse("https://api.nbp.pl/api/exchangerates/rates/a/usd/last/0/",
-                "﻿404 NotFound", HttpStatusCode.NotFound)
-            .AddResponse("https://api.nbp.pl/api/exchangerates/rates/a/usd/last/256/",
-                "﻿404 NotFound", HttpStatusCode.NotFound);
+            string.Empty, HttpStatusCode.NotFound);
 
         var service = new NbpApiService(new CachedJsonFetcher(cache, httpClientFactory));
+        
+        // Act & Assert
         await Assert.ThrowsAsync<DataNotFoundException>(async () =>
             await service.GetMinAndMaxAverageExchangeRate("usd", 0));
+    }
+    
+    [Fact]
+    public async Task GetMinAndMaxAverageExchangeRate_QuotationCountTooHigh()
+    {
+        // Arrange
+        var cache = new MemoryCache(new MemoryCacheOptions());
+        var httpClientFactory = new MockHttpClientFactory();
+
+        httpClientFactory.AddResponse("https://api.nbp.pl/api/exchangerates/rates/a/usd/last/256/",
+                string.Empty, HttpStatusCode.NotFound);
+
+        var service = new NbpApiService(new CachedJsonFetcher(cache, httpClientFactory));
+        
+        // Act & Assert
         await Assert.ThrowsAsync<DataNotFoundException>(async () =>
             await service.GetMinAndMaxAverageExchangeRate("usd", 256));
     }
@@ -56,13 +77,16 @@ public class GetMinAndMaxAverageExchangeRateTests
     [Fact]
     public async Task GetMinAndMaxAverageExchangeRate_InvalidCurrencyCode()
     {
+        // Arrange
         var cache = new MemoryCache(new MemoryCacheOptions());
         var httpClientFactory = new MockHttpClientFactory();
 
         httpClientFactory.AddResponse("https://api.nbp.pl/api/exchangerates/rates/a/invalid/last/10/",
-                "﻿404 NotFound", HttpStatusCode.NotFound);
+                string.Empty, HttpStatusCode.NotFound);
 
         var service = new NbpApiService(new CachedJsonFetcher(cache, httpClientFactory));
+        
+        // Act & Assert
         await Assert.ThrowsAsync<DataNotFoundException>(async () =>
             await service.GetMinAndMaxAverageExchangeRate("invalid", 10));
     }

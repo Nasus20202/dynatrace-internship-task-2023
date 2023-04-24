@@ -11,6 +11,7 @@ public class GetMaxDifferenceBetweenBuyAndAskTests
     [Fact]
     public async Task GetMaxDifferenceBetweenBuyAndAsk_ValidInput()
     {
+        // Arrange
         var cache = new MemoryCache(new MemoryCacheOptions());
         var httpClientFactory = new MockHttpClientFactory();
 
@@ -23,25 +24,45 @@ public class GetMaxDifferenceBetweenBuyAndAskTests
             "{\"no\":\"079/C/NBP/2023\",\"effectiveDate\":\"2023-04-24\",\"bid\":4.1629,\"ask\":4.2471}]}");
 
         var service = new NbpApiService(new CachedJsonFetcher(cache, httpClientFactory));
+        
+        // Act
         var result = await service.GetMaxDifferenceBetweenBuyAndAsk("usd", 5);
+        
+        // Assert
         Assert.Equal(0.0846, result.Value);
         Assert.Equal(new DateOnly(2023, 4, 18), result.Date);
     }
     
     [Fact]
-    public async Task GetMaxDifferenceBetweenBuyAndAsk_InvalidQuotationCount()
+    public async Task GetMaxDifferenceBetweenBuyAndAsk_QuotationCountTooLow()
     {
+        // Arrange
         var cache = new MemoryCache(new MemoryCacheOptions());
         var httpClientFactory = new MockHttpClientFactory();
 
         httpClientFactory.AddResponse("https://api.nbp.pl/api/exchangerates/rates/a/usd/last/0/",
-                "﻿404 NotFound", HttpStatusCode.NotFound)
-            .AddResponse("https://api.nbp.pl/api/exchangerates/rates/a/usd/last/256/",
-                "400 BadRequest - Przekroczony limit 255 wyników / Maximum size of 255 data series has been exceeded", HttpStatusCode.BadRequest);
+            string.Empty, HttpStatusCode.NotFound);
 
         var service = new NbpApiService(new CachedJsonFetcher(cache, httpClientFactory));
+        
+        // Act & Assert
         await Assert.ThrowsAsync<DataNotFoundException>(async () =>
             await service.GetMinAndMaxAverageExchangeRate("usd", 0));
+    }
+    
+    [Fact]
+    public async Task GetMaxDifferenceBetweenBuyAndAsk_QuotationCountTooHigh()
+    {
+        // Arrange
+        var cache = new MemoryCache(new MemoryCacheOptions());
+        var httpClientFactory = new MockHttpClientFactory();
+
+        httpClientFactory.AddResponse("https://api.nbp.pl/api/exchangerates/rates/a/usd/last/256/",
+                string.Empty, HttpStatusCode.BadRequest);
+        
+        var service = new NbpApiService(new CachedJsonFetcher(cache, httpClientFactory));
+        
+        // Act & Assert
         await Assert.ThrowsAsync<FetchFailedException>(async () =>
             await service.GetMinAndMaxAverageExchangeRate("usd", 256));
     }
@@ -49,13 +70,16 @@ public class GetMaxDifferenceBetweenBuyAndAskTests
     [Fact]
     public async Task GetMaxDifferenceBetweenBuyAndAsk_InvalidCurrencyCode()
     {
+        // Arrange
         var cache = new MemoryCache(new MemoryCacheOptions());
         var httpClientFactory = new MockHttpClientFactory();
 
         httpClientFactory.AddResponse("https://api.nbp.pl/api/exchangerates/rates/a/invalid/last/10/",
-            "﻿404 NotFound", HttpStatusCode.NotFound);
+            String.Empty, HttpStatusCode.NotFound);
 
         var service = new NbpApiService(new CachedJsonFetcher(cache, httpClientFactory));
+        
+        // Act & Assert
         await Assert.ThrowsAsync<DataNotFoundException>(async () =>
             await service.GetMinAndMaxAverageExchangeRate("invalid", 10));
     }

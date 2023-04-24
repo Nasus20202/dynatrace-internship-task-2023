@@ -2,6 +2,7 @@
 using CurrencyApi.Currency.CurrencyService;
 using CurrencyApi.Currency.CurrencyDtos;
 using CurrencyApi.Currency.ErrorHandling;
+using CurrencyApi.Currency.Exceptions;
 
 namespace CurrencyApi.Currency;
 
@@ -74,10 +75,10 @@ public class CurrencyController : Controller
         
         if (quotations <= 0)
         {
-            return BadRequest("Quotations must be greater than 0");
+            throw new InvalidQuotationsCountException("Quotations must be greater than 0");
         }
         if (quotations > MaxQuotations){
-            return BadRequest($"Quotations must be less or equal {MaxQuotations}");
+            throw new InvalidQuotationsCountException($"Quotations must be less or equal {MaxQuotations}");
         }
         
         var data = await _ratesService.GetMinAndMaxAverageExchangeRate(currencyCode, quotations);
@@ -103,11 +104,11 @@ public class CurrencyController : Controller
         
         if (quotations <= 0)
         {
-            return BadRequest("Quotations must be greater than 0");
+            throw new InvalidQuotationsCountException("Quotations must be greater than 0");
         }
         if (quotations > MaxQuotations)
         {
-            return BadRequest($"Quotations must be less or equal {MaxQuotations}");
+            throw new InvalidQuotationsCountException($"Quotations must be less or equal {MaxQuotations}");
         }
         
         var data = await _ratesService.GetMaxDifferenceBetweenBuyAndAsk(currencyCode, quotations);

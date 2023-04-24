@@ -1,4 +1,5 @@
 ﻿using CurrencyApi.Currency.CurrencyService.Exceptions;
+using CurrencyApi.Currency.Exceptions;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -21,6 +22,11 @@ public class CurrencyErrorHandler : IExceptionFilter
             {
                 StatusCode = statusCode
             };
+            context.ExceptionHandled = true;
+        }
+        else if (context.Exception is InvalidQuotationsCountException)
+        {
+            context.Result = new BadRequestObjectResult(new ErrorContext(context.Exception.Message, StatusCodes.Status400BadRequest));
             context.ExceptionHandled = true;
         }
     }
