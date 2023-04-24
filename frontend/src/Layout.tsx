@@ -1,6 +1,7 @@
 import {Outlet} from "react-router-dom";
 import {Container, Nav, Navbar} from "react-bootstrap";
 import {Link} from 'react-router-dom';
+import apiPath from "./api/ApiPath";
 
 function Layout() {
     return (
@@ -8,7 +9,7 @@ function Layout() {
             <Navbar bg="dark" variant="dark" expand="sm">
                 <Container>
                     <Navbar.Brand>
-                        <Link to="/">
+                        <Link to={`${apiPath}/swagger`}>
                             Currency API
                         </Link>
                     </Navbar.Brand>
@@ -21,8 +22,11 @@ function Layout() {
                             <Link className="nav-link" to="/extremes">
                                 Extremes
                             </Link>
-                            <Link className="nav-link" to="/differences">
+                            <Link className="nav-link me-1" to="/differences">
                                 Differences
+                            </Link>
+                            <Link className="nav-link fw-semibold" to={`${apiPath}/swagger`}>
+                                Swagger UI
                             </Link>
                         </Nav>
                     </Navbar.Collapse>

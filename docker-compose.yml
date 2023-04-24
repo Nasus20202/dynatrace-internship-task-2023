@@ -1,0 +1,15 @@
+﻿version: "3.9"
+services:
+  backend:
+    build: ./backend/CurrencyApi
+    ports:
+      - "5000:80"
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:80"
+      - "4000:80"
+    depends_on:
+      - backend
+  redis:
+    image: "redis:alpine"
