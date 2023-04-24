@@ -11,5 +11,3 @@ services:
       - "4000:80"
     depends_on:
       - backend
-  redis:
-    image: "redis:alpine"
