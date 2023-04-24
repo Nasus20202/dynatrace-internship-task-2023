@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Text.Json;
 using CurrencyApi.Currency.CurrencyService.Exceptions;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -40,14 +41,20 @@ public class CachedJsonFetcher : ICachedJsonFetcher
         {
             var response = await client.GetAsync(url);
             if (response.StatusCode == HttpStatusCode.NotFound)
+            {
                 throw new DataNotFoundException("Data not found");
+            }
             if (response.StatusCode != HttpStatusCode.OK)
+            {
                 throw new FetchFailedException("Failed to fetch data");
-
-            var json = await response.Content.ReadFromJsonAsync<T>();
-            if (json == null)
+            }
+            try
+            {
+                return await response.Content.ReadFromJsonAsync<T>() ?? throw new JsonException(); 
+            } catch (JsonException)
+            {
                 throw new FetchFailedException("Invalid JSON response");
-            return json;
+            }
         } catch(TaskCanceledException)
         {
             throw new FetchFailedException("Request timed out");
