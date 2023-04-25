@@ -3,7 +3,7 @@
 
 This is a solution to [Dynatrace Gdansk Backend Internship Task](https://github.com/joaquinfilipic-dynatrace/gdn-internship-2023).
 It is a simple API that does basic operations on data from [NBP API](https://api.nbp.pl/).
-The Web API was created using .NET 7 with ASP.NET Core. It is located in the `backend` folder.
+The Web API was created using .NET 7 with ASP.NET Core. It is located in the [`backend`](./backend) folder.
 This REST API implements the following endpoints:
 - `GET /exchange/average/{code}` - returns the current exchange rate for the given currency code
 - `GET /exchange/average/{code}/{date}` - returns the average exchange rate for the given currency code and date
@@ -15,12 +15,12 @@ More information about the endpoints can be found in the Swagger UI [`/swagger/i
 All the data fetched from NBP API is memory cached - default cache expiration time is 15 minutes.
 The project also contains basic unit and integration tests.
 
-I have also created a simple frontend page that uses the API - it can be found in the `frontend` folder.
+I have also created a simple frontend page that uses the API - it can be found in the [`frontend`](./frontend) folder.
 It was created using React.js and TypeScript.
 
 
 ##### Configuration
-By default, frontend is configured to use the API running on [`http://localhost:5000/`](http://localhost:5000/).
+By default, frontend is configured to use the API running on [`http://localhost:5000/`](http://localhost:5000/swagger/index.html).
 If you want to change this, you can do so by editing the [`frontend/src/api/api.config.json`](./frontend/src/api/api.config.json) file.
 
 ---
@@ -31,7 +31,7 @@ while in the root directory:
 ```bash
 docker compose up
 ```
-The API will be available at [`http://localhost:5000/`](http://localhost:5000/).
+The API will be available at [`http://localhost:5000/`](http://localhost:5000/swagger/index.html).
 
 The frontend page will be available at [`http://localhost:80/`](http://localhost:80/) and [`http://localhost:4000/`](http://localhost:4000/).
 
@@ -47,7 +47,7 @@ Then, you can run the project using the following command while in the root dire
 ```bash
 dotnet run --project .\backend\CurrencyApi\ --urls="http://localhost:5000/"
 ```
-The API will be available at [`http://localhost:5000/`](http://localhost:5000/).
+The API will be available at [`http://localhost:5000/`](http://localhost:5000/swagger/index.html).
 
 Swagger UI will be available at [`http://localhost:5000/swagger/index.html`](http://localhost:5000/swagger/index.html).
 
