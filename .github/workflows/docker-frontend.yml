@@ -1,4 +1,4 @@
-name: Docker Backend Image CI
+name: Docker Frontend Image CI
 
 on:
   push:
@@ -15,4 +15,4 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build ./backend/CurrencyApi/ --tag currency-api-backend:$(date +%s)
+      run: docker build ./frontend/ --tag currency-api-frontend:$(date +%s)

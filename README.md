@@ -159,5 +159,3 @@ Should return something similar to:
 
 ![Example frontend page](./img/differences.gif)
 </details>
-
----
