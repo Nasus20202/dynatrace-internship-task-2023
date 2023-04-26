@@ -29,7 +29,7 @@ If you want to change this, you can do so by editing the [`frontend/src/api/api.
 If you have Docker installed, you can run the project using the following command
 while in the root directory:
 ```bash
-docker compose up
+docker-compose up
 ```
 The API will be available at [`http://localhost:5000/`](http://localhost:5000/swagger/index.html).
 
@@ -45,7 +45,7 @@ Notice: Both backend and frontend are running in release mode.
 To run the backend, you need to have .NET 7 installed.
 Then, you can run the project using the following command while in the root directory:
 ```bash
-dotnet run --project .\backend\CurrencyApi\ --urls="http://localhost:5000/"
+dotnet run --project ./backend/CurrencyApi --urls="http://localhost:5000/"
 ```
 The API will be available at [`http://localhost:5000/`](http://localhost:5000/swagger/index.html).
 
@@ -67,7 +67,7 @@ The frontend page will be available at [`http://localhost:3000/`](http://localho
 ### How to run tests
 You can run the tests using the following command while in the root directory:
 ```bash
-dotnet test .\backend\CurrencyApi.Tests\
+dotnet test ./backend/CurrencyApi.Tests
 ```
 
 ---
